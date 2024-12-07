@@ -1,2 +1,3 @@
-# flex-shuffle
-Shuffle flex items
+## FlexShuffle package
+
+Shuffle the flex items.
