@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Animating Flex Item Order</title>
+    <style>
+        .d-flex {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .flex-container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        .flex-item {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(200, 200, 200, 0.5);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        button {
+            border: 1px solid;
+            border-radius: 4px;
+            padding: 4px 10px;
+            height: 30px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: rgba(220, 220, 220, 0.75);
+        }
+    </style>
+</head>
+<body>
+    <h2 class="text-center">Animating Flex Item Order Property</h2>
+
+    <div class="text-center mb-4">
+        <button id="shuffle-btn">Shuffle</button>
+    </div>
+
+    <div class="d-flex flex-container">
+        <div class="flex-item">1</div>
+        <div class="flex-item">2</div>
+        <div class="flex-item">3</div>
+        <div class="flex-item">4</div>
+        <div class="flex-item">5</div>
+        <div class="flex-item">6</div>
+        <div class="flex-item">7</div>
+        <div class="flex-item">8</div>
+        <div class="flex-item">9</div>
+        <div class="flex-item">10</div>
+        <div class="flex-item">11</div>
+        <div class="flex-item">12</div>
+    </div>
+
+    <script>
+        const originalOrders = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        const flexItems = document.querySelectorAll('.flex-container > *');
+
+        for (var i = 0; i < originalOrders.length; i++) {
+            flexItems[i].style.order = originalOrders[i];
+        }
+
+        let itemsInOrder = [...flexItems];
+        const shuffleBtn = document.getElementById('shuffle-btn');
+        shuffleBtn.addEventListener('click', () => {
+            let orders = [...originalOrders];
+            let animations = [];
+
+            for (var i = 0; i < originalOrders.length; i++) {
+                // Randomly get a new order
+                let newOrder = orders.splice(randomIntFromInterval(0, orders.length - 1), 1)[0];
+
+                let currentPosition = getPosition(itemsInOrder[i]);
+                let newPosition = getPosition(itemsInOrder[newOrder - 1]);
+
+                animations.push({
+                    animation: getTranslateAnimation(currentPosition, newPosition),
+                    itemCount: i,
+                    newOrder: newOrder
+                });
+
+            }
+
+            // Perform animations
+            shuffleAnimate(animations);
+        });
+
+        function shuffleAnimate(animations) {
+            const newItemsInOrder = [];
+
+            for (var i = 0; i < animations.length; i++) {
+                let animation = animations[i];
+
+                itemsInOrder[animation.itemCount].animate(animation.animation, 500)
+                                .finished.then(() => {
+                                    itemsInOrder[animation.itemCount].style.order = animation.newOrder;
+
+                                    // zero based indexes so reduce one
+                                    newItemsInOrder[animation.newOrder - 1] = itemsInOrder[animation.itemCount];
+
+                                    return newItemsInOrder;
+                                }).then((newItemsInOrder) => {
+                                    if (newItemsInOrder.length == itemsInOrder.length) {
+                                        itemsInOrder = [...newItemsInOrder];
+                                    }
+                                });
+            }
+
+            // itemsInOrder = [...newItemsInOrder];
+        }
+
+        function randomIntFromInterval(min, max) { // min and max included 
+          return Math.floor(Math.random() * (max - min + 1) + min);
+        }
+
+        function getPosition(element) {
+            return {x: element.getBoundingClientRect().x, y: element.getBoundingClientRect().y};
+        }
+
+        function getTranslateAnimation(currentPosition, newPosition) {
+            let translateX = parseFloat(newPosition.x) - parseFloat(currentPosition.x);
+            let translateY = parseFloat(newPosition.y) - parseFloat(currentPosition.y);
+
+            // Translate from original position to new position
+            return [
+                { transform: 'translate(0)' },
+                { transform: 'translate('+ translateX +'px, '+ translateY +'px)' }
+            ];
+        }
+    </script>
+</body>
+</html>
