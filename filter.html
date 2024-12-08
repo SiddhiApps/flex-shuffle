@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Filter the shuffle items</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        figure {
+            margin: 0;
+        }
+        figcaption {
+            text-align: center;
+            background-color: rgba(221, 221, 221, 0.7);
+            padding: 4px;
+            margin-top: -5px;
+        }
+        .flex-container {
+            justify-content: left;
+        }
+    </style>
+</head>
+<body>
+
+    <!--
+        Setup the flex items with data-groups attribute, comma separate values: 'nature,city'
+        On click of 'nature'
+            Hide the items belonging to only 'city'
+            Show the items belonging to only 'nature'
+        Can display property be smoothly animated?
+        If not use the technique used in Shuffle JS - visibility: hidden and scale: 0.01
+    -->
+
+    <h2 class="text-center">Shuffle Filter</h2>
+
+    <div class="text-center mb-4">
+        <button class="shuffle-btn" data-filter="all">All</button>
+        <button class="shuffle-btn" data-filter="computer">Computer</button>
+        <button class="shuffle-btn" data-filter="nature">Nature</button>
+        <button class="shuffle-btn" data-filter="water">Water</button>
+        <button class="shuffle-btn" data-filter="nature|water">Nature or Water</button>
+        <button class="shuffle-btn" data-filter="nature&water">Nature and Water</button>
+    </div>
+
+    <div class="d-flex flex-container gap-3" id="flex-shuffle">
+        <figure class="flex-item" data-groups="Computer">
+            <img src="https://picsum.photos/id/0/200">
+            <figcaption>Computer</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature, Water">
+            <img src="https://picsum.photos/id/13/200">
+            <figcaption>Nature, Water</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Computer">
+            <img src="https://picsum.photos/id/2/200">
+            <figcaption>Computer</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Book">
+            <img src="https://picsum.photos/id/24/200">
+            <figcaption>Book</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature, Water">
+            <img src="https://picsum.photos/id/14/200">
+            <figcaption>Nature, Water</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature, Water">
+            <img src="https://picsum.photos/id/37/200">
+            <figcaption>Nature, Water</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Computer">
+            <img src="https://picsum.photos/id/6/200">
+            <figcaption>Computer</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature">
+            <img src="https://picsum.photos/id/17/200">
+            <figcaption>Nature</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Computer">
+            <img src="https://picsum.photos/id/8/200">
+            <figcaption>Computer</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Computer">
+            <img src="https://picsum.photos/id/9/200">
+            <figcaption>Computer</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature">
+            <img src="https://picsum.photos/id/10/200">
+            <figcaption>Nature</figcaption>
+        </figure>
+        <figure class="flex-item" data-groups="Nature, Water">
+            <img src="https://picsum.photos/id/11/200">
+            <figcaption>Nature, Water</figcaption>
+        </figure>
+    </div>
+
+    <script src="js/FlexPositions.js"></script>
+    <script src="js/FlexShuffle.js"></script>
+    <script src="js/filter.js"></script>
+</body>
+</html>
