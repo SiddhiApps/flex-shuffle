@@ -1,4 +1,6 @@
 
+// This is much better. Animations are based on the flex item order.
+// Only problem is while animating the flex container height changes (Jumping effect)
 class FlexShuffle {
     constructor(element, options = {}) {
         this._items = element.children;
@@ -37,12 +39,11 @@ class FlexShuffle {
             // TODO: It is a challenge based on the justify content value
             let newPosition = this._flexPositions.getPosition(i, this._visibleItems.length);
 
-            let currentHidden = this._items[this._visibleItems[i]].style.display === 'none';
             let transform = {
                 type: 'show',
                 element: this._items[this._visibleItems[i]],
                 order: i + 1,
-                keyframes: this._getTranslateAnimation(currentPosition, newPosition, currentHidden)
+                keyframes: this._getTranslateAnimation(currentPosition, newPosition)
             }
 
             transforms.push(transform);
@@ -77,9 +78,6 @@ class FlexShuffle {
             animation.finished.then(() => {
                                 if (transform.type == 'hide') {
                                     transform.element.style.display = 'none';
-                                    transform.element.style.transform = 'translate(0, 0) scale(0.01)';
-                                } else {
-                                    transform.element.style.transform = 'translate(0, 0) scale(1)';
                                 }
                                 transform.element.style.order = transform.order;
                             });
@@ -150,13 +148,13 @@ class FlexShuffle {
         return {x: element.getBoundingClientRect().x, y: element.getBoundingClientRect().y};
     }
 
-    _getTranslateAnimation(currentPosition, newPosition, currentHidden) {
+    _getTranslateAnimation(currentPosition, newPosition) {
         let translateX = parseFloat(newPosition.x) - parseFloat(currentPosition.x);
         let translateY = parseFloat(newPosition.y) - parseFloat(currentPosition.y);
 
         // Translate from original position to new position
         return [
-            { transform: 'translate(0) ' + (currentHidden ? 'scale(0.01)' : '') },
+            { transform: 'translate(0)' },
             { transform: 'translate('+ translateX +'px, '+ translateY +'px)' }
         ];
     }
