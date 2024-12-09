@@ -1,6 +1,5 @@
+// Animation: Hidden items are absolutely positioned. So the animation looks simple.
 
-// This is much better. Animations are based on the flex item order.
-// Only problem is while animating the flex container height changes (Jumping effect)
 class FlexShuffle {
     constructor(element, options = {}) {
         this._items = element.children;
@@ -11,10 +10,6 @@ class FlexShuffle {
         this._itemHeight = this._items[0].clientHeight;
 
         this._flexPositions = new FlexPositions(element);
-
-        for (var i = 0; i < this._items.length; i++) {
-            this._items[i].style.order = i + 1;
-        }
     }
 
     _shuffle() {
@@ -31,10 +26,7 @@ class FlexShuffle {
         }
 
         for (var i = 0; i < this._visibleItems.length; i++) {
-            let currentPosition = this._flexPositions.getPosition(
-                                    this._items[this._visibleItems[i]].style.order - 1,
-                                    this._visibleItems.length
-                                );
+            let currentPosition = this._getPosition(this._items[this._visibleItems[i]]);
             // Find the new position based on the width and margins
             // TODO: It is a challenge based on the justify content value
             let newPosition = this._flexPositions.getPosition(i, this._visibleItems.length);
@@ -72,12 +64,19 @@ class FlexShuffle {
             animation.ready.then(() => {
                                 if (transform.type == 'show') {
                                     // We just need to remove the 'none' value
-                                    transform.element.style.display = '';
+                                    // transform.element.style.display = '';
+                                    transform.element.style.zIndex = '';
+                                    transform.element.style.opacity = '';
                                 }
                             });
             animation.finished.then(() => {
                                 if (transform.type == 'hide') {
-                                    transform.element.style.display = 'none';
+                                    // transform.element.style.display = 'none';
+                                    transform.element.style.position = 'absolute';
+                                    transform.element.style.zIndex = -1;
+                                    transform.element.style.opacity = 0;
+                                } else {
+                                    transform.element.style.position = '';
                                 }
                                 transform.element.style.order = transform.order;
                             });
@@ -94,42 +93,20 @@ class FlexShuffle {
 
     filter(filterBy) {
         this._visibleItems = [];
-        let currentHiddenItems = [...this._hiddenItems];
         this._hiddenItems = [];
         const filters = filterBy.split(/[\|\&]/);
 
-        if (filters[0] == 'all') {
-            for (var i = 0; i < this._items.length; i++) {
+        for (var i = 0; i < this._items.length; i++) {
+            let itemGroups = this._getItemGroups(this._items.item(i));
+            let shouldBeShown = itemGroups.some((itemGroup) => {
+                return filters.includes(itemGroup);
+            });
+
+            if (shouldBeShown) {
                 this._visibleItems.push(i);
+            } else {
+                this._hiddenItems.push(i);
             }
-        } else {
-            for (var i = 0; i < this._items.length; i++) {
-                let itemGroups = this._getItemGroups(this._items.item(i));
-                let shouldBeShown = itemGroups.some((itemGroup) => {
-                    return filters.includes(itemGroup);
-                });
-
-                if (shouldBeShown) {
-                    this._visibleItems.push(i);
-                } else {
-                    this._hiddenItems.push(i);
-                }
-            }
-        }
-
-        // Reorder the hidden items. When the hidden items are shown
-        // and animated we need to get the correct coordinates of the hidden item.
-        // For example if items with order 6, 7 and 8 are currently hidden and in the
-        // next shuffle item with order 7 continues to be hidden, then we need to get
-        // the correct coordinates for the item with order 8.
-        // Order [6, 7, 8] will become [6, 8, 7]
-        currentHiddenItems.sort((x, y) => {
-            return this._hiddenItems.includes(y)  ? -1 : 0;
-        });
-
-        let previousVisibleItemsCount = this._items.length - currentHiddenItems.length;
-        for (var i = 0; i < currentHiddenItems.length; i++) {
-            this._items[currentHiddenItems[i]].style.order = previousVisibleItemsCount + (i + 1);
         }
 
         this._shuffle();
