@@ -15,7 +15,8 @@ class FlexShuffle {
         for (var i = 0; i < this._hiddenItems.length; i++) {
             let transform = {
                 type: 'hide',
-                element: this._hiddenItems[i],
+                element: this._items[this._hiddenItems[i]],
+                order: this._visibleItems.length + (i + 1),
                 keyframes: this._getHideAnimation()
             }
 
@@ -23,14 +24,15 @@ class FlexShuffle {
         }
 
         for (var i = 0; i < this._visibleItems.length; i++) {
-            let currentPosition = this._getPosition(this._visibleItems[i]);
+            let currentPosition = this._getPosition(this._items[this._visibleItems[i]]);
             // Find the new position based on the width and margins
             // TODO: It is a challenge based on the justify content value
             let newPosition = this._flexPositions.getPosition(i, this._visibleItems.length);
-console.log(currentPosition, newPosition);
+
             let transform = {
                 type: 'show',
-                element: this._visibleItems[i],
+                element: this._items[this._visibleItems[i]],
+                order: i + 1,
                 keyframes: this._getTranslateAnimation(currentPosition, newPosition)
             }
 
@@ -60,15 +62,21 @@ console.log(currentPosition, newPosition);
             animation.ready.then(() => {
                                 if (transform.type == 'show') {
                                     // We just need to remove the 'none' value
-                                    transform.element.style.display = '';
+                                    // transform.element.style.display = '';
+                                    transform.element.style.zIndex = '';
+                                    transform.element.style.opacity = '';
                                 }
                             });
             animation.finished.then(() => {
                                 if (transform.type == 'hide') {
-                                    transform.element.style.display = 'none';
+                                    // transform.element.style.display = 'none';
+                                    transform.element.style.position = 'absolute';
+                                    transform.element.style.zIndex = -1;
+                                    transform.element.style.opacity = 0;
+                                } else {
+                                    transform.element.style.position = '';
                                 }
-
-                                console.log('Animated...');
+                                transform.element.style.order = transform.order;
                             });
         }
     }
@@ -93,9 +101,9 @@ console.log(currentPosition, newPosition);
             });
 
             if (shouldBeShown) {
-                this._visibleItems.push(this._items.item(i));
+                this._visibleItems.push(i);
             } else {
-                this._hiddenItems.push(this._items.item(i));
+                this._hiddenItems.push(i);
             }
         }
 
@@ -122,7 +130,7 @@ console.log(currentPosition, newPosition);
         // Translate from original position to new position
         return [
             { transform: 'translate(0)' },
-            { transform: 'translate('+ translateX +'px, '+ translateY +'px) scale(1)' }
+            { transform: 'translate('+ translateX +'px, '+ translateY +'px)' }
         ];
     }
 

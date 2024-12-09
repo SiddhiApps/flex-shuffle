@@ -9,7 +9,9 @@ class FlexPositions {
         this._flexItemHeight = 226;
         this._gap = 12;
 
-        this._noOfItemsInARow = parseInt(this._flexContainer.clientWidth / this._flexItemWidth);
+        // May need to consider the gap for (n-1) items
+        this._noOfItemsInARow = parseInt(this._flexContainer.clientWidth / (this._flexItemWidth + this._gap));
+
         this._firstItemPosition = {
             x: this._flexContainer.getBoundingClientRect().x,
             y: this._flexContainer.getBoundingClientRect().y
