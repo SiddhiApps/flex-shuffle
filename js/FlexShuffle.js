@@ -1,4 +1,5 @@
-
+// There is still jumping effect of the flex container
+// May be we can absolutely position the hidden elements before hiding them?
 class FlexShuffle {
     constructor(element, options = {}) {
         this._items = element.children;
@@ -61,12 +62,6 @@ class FlexShuffle {
         for (var i = 0; i < transforms.length; i++) {
             let transform = transforms[i];
 
-            // if (transform.type == 'hide') {
-            //     animationTiming.fill = 'forwards';
-            // } else {
-            //     delete animationTiming.fill;
-            // }
-
             let animation = transform.element.animate(transform.keyframes, animationTiming)
             animation.ready.then(() => {
                                 if (transform.type == 'show') {
@@ -77,10 +72,8 @@ class FlexShuffle {
             animation.finished.then(() => {
                                 if (transform.type == 'hide') {
                                     transform.element.style.display = 'none';
-                                    transform.element.style.transform = 'translate(0, 0) scale(0.01)';
-                                } else {
-                                    transform.element.style.transform = 'translate(0, 0) scale(1)';
                                 }
+
                                 transform.element.style.order = transform.order;
                             });
         }
@@ -153,6 +146,13 @@ class FlexShuffle {
     _getTranslateAnimation(currentPosition, newPosition, currentHidden) {
         let translateX = parseFloat(newPosition.x) - parseFloat(currentPosition.x);
         let translateY = parseFloat(newPosition.y) - parseFloat(currentPosition.y);
+
+        if (currentHidden) {
+            return [
+                { transform: 'translate('+ translateX +'px, '+ translateY +'px) ' + (currentHidden ? 'scale(0.01)' : '') },
+                { transform: 'translate('+ translateX +'px, '+ translateY +'px)' }
+            ];
+        }
 
         // Translate from original position to new position
         return [
